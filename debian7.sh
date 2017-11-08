@@ -14,9 +14,6 @@ MYIP=$(wget -qO- ipv4.icanhazip.com);
 MYIP2="s/xxxxxxxxx/$MYIP/g";
 MYPORT="s/85/99/g";
 
-# go to root
-cd
-
 #FIGlet In Linux
 sudo apt-get install figlet
 yum install figlet
@@ -66,9 +63,9 @@ cd
 apt-get -y install nginx php5 php5-fpm php5-cli php5-mysql php5-mcrypt
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
-wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dathai/Wedssh/master/API/nginx.conf"
+wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/nginx.conf"
 mkdir -p /home/vps/public_html
-wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/dathai/Wedssh/master/API/vps.conf"
+wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/vps.conf"
 sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php5/fpm/php.ini
 sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
 sed -i $MYPORT /etc/nginx/conf.d/vps.conf;
@@ -189,8 +186,8 @@ read -p "IP : " MyIPD
 read -p "Username : " Login
 read -p "Password : " Passwd
 MYIPS="s/xxxxxxxxx/$MyIPD/g";
-US1="s/arch19user/$Login/g";
-PS2="s/arch19pass/$Passwd/g";
+US1="s/thaivpnuser/$Login/g";
+PS2="s/thaivpnpass/$Passwd/g";
 sed -i $MYIPS /home/vps/public_html/index.php;
 sed -i $US1 /home/vps/public_html/index.php;
 sed -i $PS2 /home/vps/public_html/index.php;
@@ -203,15 +200,11 @@ rm -f install.sh
 # info
 clear
 figlet "THAI-VPN"
-echo "Autoscript Include:"
-echo "==========================================="
+echo "Script WebSSH Auto Install"
 echo "OpenSSH  : 22, 143"
 echo "Dropbear : 80, 443"
 echo "Squid3   : 8080, 3128 (limit to IP SSH)"
 echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:99/client.ovpn)"
-echo "badvpn   : badvpn-udpgw port 7300"
-echo "menu"
-echo "Script WebSSH Auto Install"
 echo "Squid     :  http://$MYIP:8080"
 echo "Nginx      :  http://$MYIP:99"
 echo "Web    :  http://$MYIP:99"
