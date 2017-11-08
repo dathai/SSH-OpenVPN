@@ -182,7 +182,7 @@ echo "unset HISTFILE" >> /etc/profile
 
 # install myweb
 cd /home/vps/public_html/
-wget -O /home/vps/public_html/myweb.tar "https://raw.githubusercontent.com/dathai/Wedssh/master/API/myweb.tar"
+wget -O /home/vps/public_html/myweb.tar "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/myweb.tar"
 cd /home/vps/public_html/
 tar xf myweb.tar
 
