@@ -63,6 +63,16 @@ echo 'echo -e ""' >> .bashrc
 
 # install webserver
 cd
+rm /etc/nginx/sites-enabled/default
+rm /etc/nginx/sites-available/default
+wget -O /etc/nginx/nginx.conf "http://vira.cf/nginx.conf"
+mkdir -p /home/vps/public_html
+echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
+wget -O /etc/nginx/conf.d/vps.conf "http://vira.cf/vps.conf"
+service nginx restart
+
+# install webserver
+cd
 apt-get -y install nginx php5 php5-fpm php5-cli php5-mysql php5-mcrypt
 rm /etc/nginx/sites-enabled/default && rm /etc/nginx/sites-available/default
 mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
