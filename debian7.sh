@@ -12,6 +12,7 @@ export DEBIAN_FRONTEND=noninteractive
 OS=`uname -m`;
 MYIP=$(wget -qO- ipv4.icanhazip.com);
 MYIP2="s/xxxxxxxxx/$MYIP/g";
+MYPORT="s/85/99/g";
 
 # go to root
 cd
@@ -62,13 +63,22 @@ echo 'echo -e ""' >> .bashrc
 
 # install webserver
 cd
+apt-get -y install nginx php5 php5-fpm php5-cli php5-mysql php5-mcrypt
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
+mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+mv /etc/nginx/conf.d/vps.conf /etc/nginx/conf.d/vps.conf.backup
 wget -O /etc/nginx/nginx.conf "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/nginx.conf"
 mkdir -p /home/vps/public_html
-echo "<pre>Setup by Bustami Arifin</pre>" > /home/vps/public_html/index.html
+echo "<pre>Setup by THAIVPN</pre>" > /home/vps/public_html/index.html
 wget -O /etc/nginx/conf.d/vps.conf "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/vps.conf"
-service nginx restart
+sed -i 's/cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php5/fpm/php.ini
+sed -i 's/listen = \/var\/run\/php5-fpm.sock/listen = 127.0.0.1:9000/g' /etc/php5/fpm/pool.d/www.conf
+sed -i $MYPORT /etc/nginx/conf.d/vps.conf;
+useradd -m vps && mkdir -p /home/vps/public_html
+rm /home/vps/public_html/index.html && echo "<?php phpinfo() ?>" > /home/vps/public_html/info.php
+chown -R www-data:www-data /home/vps/public_html && chmod -R g+rw /home/vps/public_html
+service php5-fpm restart && service nginx restart
 
 # install openvpn
 wget -O /etc/openvpn/openvpn.tar "https://raw.githubusercontent.com/dathai/SSH-OpenVPN/master/API/openvpn-debian.tar"
@@ -170,47 +180,50 @@ service webmin restart
 rm -rf ~/.bash_history && history -c
 echo "unset HISTFILE" >> /etc/profile
 
+# install myweb
+cd /home/vps/public_html/
+wget -O /home/vps/public_html/myweb.tar "https://raw.githubusercontent.com/dathai/Wedssh/master/API/myweb.tar"
+cd /home/vps/public_html/
+tar xf myweb.tar
+
+# Setting web
+echo -e "\033[01;31mIP User And Pass 'ROOT' Only \033[0m"
+read -p "IP : " MyIPD
+read -p "Username : " Login
+read -p "Password : " Passwd
+MYIPS="s/xxxxxxxxx/$MyIPD/g";
+US1="s/arch19user/$Login/g";
+PS2="s/arch19pass/$Passwd/g";
+sed -i $MYIPS /home/vps/public_html/index.php;
+sed -i $US1 /home/vps/public_html/index.php;
+sed -i $PS2 /home/vps/public_html/index.php;
+
+#RM file
+rm -f myweb.tar
+cd
+rm -f install.sh
+
 # info
 clear
 figlet "THAI-VPN"
-echo "Autoscript Include:" | tee log-install.txt
-echo "===========================================" | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Service"  | tee -a log-install.txt
-echo "-------"  | tee -a log-install.txt
-echo "OpenSSH  : 22, 143"  | tee -a log-install.txt
-echo "Dropbear : 80, 443"  | tee -a log-install.txt
-echo "Squid3   : 8080, 3128 (limit to IP SSH)"  | tee -a log-install.txt
-echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"  | tee -a log-install.txt
-echo "badvpn   : badvpn-udpgw port 7300"  | tee -a log-install.txt
-echo "nginx    : 81"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Script"  | tee -a log-install.txt
-echo "------"  | tee -a log-install.txt
-echo "menu (แสดงรายการของคำสั่งที่พร้อมใช้งาน)"  | tee -a log-install.txt
-echo "usernew (การสร้างบัญชี SSH)"  | tee -a log-install.txt
-echo "trial (สร้างบัญชีทดลองใช้)"  | tee -a log-install.txt
-echo "hapus (การหักล้างบัญชี SSH)"  | tee -a log-install.txt
-echo "cek (ตรวจสอบการเข้าสู่ระบบของผู้ใช้)"  | tee -a log-install.txt
-echo "member (ตรวจสอบสมาชิก SSH)"  | tee -a log-install.txt
-echo "resvis (Restart Service dropbear, webmin, squid3, openvpn dan ssh)"  | tee -a log-install.txt
-echo "reboot (Reboot VPS)"  | tee -a log-install.txt
-echo "speedtest (Speedtest VPS)"  | tee -a log-install.txt
-echo "info (แสดงข้อมูลระบบ)"  | tee -a log-install.txt
-echo "about (ข้อมูลเกี่ยวกับสคริปต์ติดตั้งอัตโนมัติ)"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Fitur lain"  | tee -a log-install.txt
-echo "----------"  | tee -a log-install.txt
-echo "Webmin   : http://$MYIP:10000/"  | tee -a log-install.txt
-echo "IPv6     : [off]"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Modified by THAI-VPN"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "Log Instalasi --> /root/log-install.txt"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "VPS AUTO REBOOT TIAP JAM 12 MALAM"  | tee -a log-install.txt
-echo ""  | tee -a log-install.txt
-echo "==========================================="  | tee -a log-install.txt
+echo "Autoscript Include:"
+echo "==========================================="
+echo "OpenSSH  : 22, 143"
+echo "Dropbear : 80, 443"
+echo "Squid3   : 8080, 3128 (limit to IP SSH)"
+echo "OpenVPN  : TCP 1194 (client config : http://$MYIP:81/client.ovpn)"
+echo "badvpn   : badvpn-udpgw port 7300"
+echo "nginx    : 81"
+echo "menu"
+echo "Script WebSSH Auto Install"
+echo "Squid     :  http://$MYIP:8080"
+echo "Nginx      :  http://$MYIP:99"
+echo "Web    :  http://$MYIP:99"
+echo "Webmin   : http://$MYIP:10000/"
+echo "IPv6     : [off]"
+echo "Modified by THAI-VPN"
+echo "VPS AUTO REBOOT TIAP JAM 12 MALAM"
+echo "==========================================="
 figlet "THAI-VPN"
 cd
 rm -f /root/debian7.sh
