@@ -1,4 +1,4 @@
-# Script Auto Install SSH & OpenVPN
+# Script Auto Install SSH & OpenVPN debian8x32
 
 OpenSSH, port : 22, 143
 
