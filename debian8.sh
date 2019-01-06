@@ -215,4 +215,4 @@ echo "VPS AUTO REBOOT TIAP JAM 12 MALAM"
 echo "==========================================="
 figlet "THAI-VPN"
 cd
-rm -f /root/debian7.sh
+rm -f /root/debian8.sh
